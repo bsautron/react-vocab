@@ -3,9 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@material-ui/core": "^4.11.3",
+    "@material-ui/icons": "^4.11.2",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
-    "react-scripts": "0.9.5"
+    "react-scripts": "0.9.5",
+    "typedi": "^0.10.0"
   },
   "scripts": {
     "start": "react-scripts start",

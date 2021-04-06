@@ -1,0 +1,38 @@
+.voca-fr {
+	font-size: 30px;
+	margin: 20px;
+}
+.voca-fr.bad {
+	color: red
+}
+.voca-input {
+	border: 0;
+	font-size: 30px;
+	width: 25%;
+	padding: 10PX 80px;
+	border-bottom: 1px solid grey;
+}
+
+.voca-input:focus {
+	outline: none;
+}
+
+.voca-input.bad {
+	border-bottom: 1px solid red;
+	color: red
+}
+.voca-input.good {
+	border-bottom: 1px solid green;
+	color: green
+}
+.voca-msg {
+	font-size: 30px;
+	margin: 20px;
+
+}
+.voca-msg.bad {
+	color: red
+}
+.voca-msg.good {
+	color: green
+}
