@@ -1,17 +1,13 @@
 import React from 'react'
 import './App.css'
 import PageRevisions from './pages/revision'
+import { Container } from '@material-ui/core'
 
 function App() {
   return (
-    <div
-      style={{
-        height: '100vh',
-        width: '100vw',
-      }}
-    >
+    <Container>
       <PageRevisions></PageRevisions>
-    </div>
+    </Container>
   )
 }
 

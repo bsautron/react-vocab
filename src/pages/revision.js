@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react'
 import { dic } from '../db.json'
 import './revision.css'
 import SelectTags from '../comp/tags/select-tags'
+import Translation from '../comp/words/translation'
+import { Grid } from '@material-ui/core'
+
 /**
  * Select word with mathing tags
  * @example
@@ -55,26 +58,34 @@ export default function PageRevisions() {
   /* The curent dic to use, filtred by tag */
   const [selectedDic, setDic] = useState([])
   /* The current tags selected for filtering the dic */
-  const [tags, setTags] = useState([])
+  const [tags, setTags] = useState(['ropa'])
+  /* The current word to translate */
+  const [currentWord, setWord] = useState({})
 
+  const getRandWord = (fromDic) =>
+    fromDic.sort(() => Math.random() - 0.5)[0] || {}
   /**
    * When new tags added, select the new filter dic
    */
   useEffect(() => {
-    setDic(getDicByTags(tags))
+    const filtredDic = getDicByTags(tags)
+    setDic(filtredDic)
+    setWord(getRandWord(filtredDic))
   }, [tags])
 
   return (
-    <div>
-      <SelectTags availableTags={allTags} selectTags={setTags}></SelectTags>
-
-      <div>
-        {selectedDic.map((d, i) => (
-          <div key={i}>
-            {d.fr} = {d.es}
-          </div>
-        ))}
-      </div>
-    </div>
+    <Grid
+      container
+      direction="column"
+      justify="flex-start"
+      alignItems="stretch"
+    >
+      <Grid item>
+        <SelectTags availableTags={allTags} selectTags={setTags}></SelectTags>
+      </Grid>
+      <Grid item>
+        <Translation word={currentWord}></Translation>
+      </Grid>
+    </Grid>
   )
 }

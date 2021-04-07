@@ -1,0 +1,7 @@
+.attempt {
+    display: flex;
+    height: 40px;
+    width: 100%;
+    justify-content: flex-start;
+    flex-direction: row;
+}
