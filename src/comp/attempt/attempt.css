@@ -5,3 +5,14 @@
     justify-content: flex-start;
     flex-direction: row;
 }
+.attempt-text {
+    position: relative;
+    top: -2px;
+}
+
+.attempt-valid {
+    color: #388e3c;
+}
+.attempt-unvalid {
+    color: #b00020;
+}
