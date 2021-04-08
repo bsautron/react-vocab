@@ -16,6 +16,9 @@ export default function SelectTags({ availableTags, selectTags }) {
         limitTags={3}
         options={availableTags}
         groupBy={(tag) => tag.split('/')[0]}
+        ChipProps={{
+          color: 'primary',
+        }}
         renderOption={(tag) => {
           const sp = tag.split('/')
           if (sp.length === 1) return 'todo'

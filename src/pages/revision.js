@@ -62,21 +62,25 @@ export default function PageRevisions() {
   /* The current word to translate */
   const [currentWord, setWord] = useState({})
 
-  const getRandWord = (fromDic) =>
+  /* Get a random word from the filtred dic */
+  const getRandWord = (fromDic = []) =>
     fromDic.sort(() => Math.random() - 0.5)[0] || {}
-  /**
-   * When new tags added, select the new filter dic
-   */
+  /* Selecter an new word from the filtred dic */
+  const otherWord = (fromDic) => setWord(getRandWord(fromDic))
 
-  function otherWord() {
-    setWord(getRandWord(selectedDic))
-  }
+  /**
+   * When nea tags are added or deleted
+   * Filter the dic
+   */
   useEffect(() => {
     setDic(getDicByTags(tags))
   }, [tags])
 
+  /**
+   * When the dic is filtred, select a new word form this
+   */
   useEffect(() => {
-    otherWord()
+    otherWord(selectedDic)
   }, [selectedDic])
 
   return (
@@ -91,7 +95,10 @@ export default function PageRevisions() {
       </Grid>
       {selectedDic.length ? (
         <Grid item>
-          <Translation word={currentWord} changeWord={otherWord}></Translation>
+          <Translation
+            word={currentWord}
+            changeWord={() => otherWord(selectedDic)}
+          ></Translation>
         </Grid>
       ) : (
         ''

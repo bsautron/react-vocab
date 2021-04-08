@@ -6,21 +6,19 @@ import {
   Input,
   FormHelperText,
   Typography,
-  Button,
-  ButtonGroup,
 } from '@material-ui/core'
-import Attempt from '../attempt/attempt'
+import AttemptList from '../attempt/attempt-list'
 import { normalize, capitalize } from '../../services/utils.service'
+import FinishGrpBtn from '../finish-grp-btn/finish-grp-btn'
+import TranslationInput from './translation-input'
+import TranslationTitle from './translation-title'
 
 export default function Translation({ word, changeWord }) {
-  const [maxAttepmt, setMaxAttempt] = useState(3)
   const [allAttempt, setAllAttempt] = useState([])
-  const [textInput, setInput] = useState('')
   const [isCorrect, setIsCorrect] = useState(false)
   const [dontKnow, setDontKnow] = useState(false)
   const [nextWord, setNextWord] = useState(false)
-  const btnEl = useRef(null)
-  const inputEl = useRef(null)
+  const [textInput, setInput] = useState('')
 
   function isValid(trad, text) {
     const sp = trad.split('/')
@@ -29,20 +27,23 @@ export default function Translation({ word, changeWord }) {
     }
     return false
   }
+  const pushAttempt = (valid, wordAttempt) => {
+    setAllAttempt([
+      ...allAttempt,
+      {
+        valid,
+        text: wordAttempt,
+      },
+    ])
+    setIsCorrect(valid)
+  }
 
   useEffect(() => {
     setInput('')
   }, [allAttempt])
 
   useEffect(() => {
-    if (allAttempt.length >= maxAttepmt) {
-      setDontKnow(true)
-    }
-  }, [allAttempt])
-
-  useEffect(() => {
     if (isCorrect) {
-      btnEl.current.focus()
     }
   }, [isCorrect])
   useEffect(() => {
@@ -51,10 +52,9 @@ export default function Translation({ word, changeWord }) {
       setNextWord(false)
       setDontKnow(false)
       setIsCorrect(false)
-      setInput('')
       setAllAttempt([])
+      setInput('')
     }
-    inputEl.current.focus()
   }, [nextWord])
   useEffect(() => {
     if (dontKnow) {
@@ -71,7 +71,7 @@ export default function Translation({ word, changeWord }) {
       alignItems="stretch"
     >
       <Grid item>
-        <Paper elevation={3}>
+        <Paper elevation={2}>
           <Grid
             className="translation-area"
             container
@@ -80,93 +80,33 @@ export default function Translation({ word, changeWord }) {
             alignItems="stretch"
           >
             <Grid item className="translation-fr">
-              <Typography variant="h3" align="center">
-                {capitalize(word.fr)}{' '}
-                {isCorrect ? ` - ${capitalize(word.es)}` : ''}
-              </Typography>
+              <TranslationTitle
+                word={word.fr}
+                trad={word.es}
+                showTrad={isCorrect}
+              />
             </Grid>
             <Grid item className="translation-attempts">
-              <Grid
-                container
-                direction="column"
-                justify="center"
-                alignItems="flex-start"
-              >
-                {Array.from({ length: maxAttepmt }).map((_, i) => {
-                  return (
-                    <Grid item>
-                      <Attempt
-                        hidden={!allAttempt[i]}
-                        text={(allAttempt[i] || {}).text}
-                        valid={(allAttempt[i] || {}).valid}
-                      ></Attempt>
-                    </Grid>
-                  )
-                })}
-              </Grid>
+              <AttemptList
+                maxAttepmt={3}
+                attempts={allAttempt}
+                onReachLimit={() => setDontKnow(true)}
+              ></AttemptList>
             </Grid>
             <Grid item className="translation-input">
-              <Input
+              <TranslationInput
                 value={textInput}
-                inputRef={inputEl}
-                autoFocus={true}
                 onChange={(e) => setInput(e.target.value)}
                 disabled={isCorrect}
-                onKeyPress={(ev) => {
-                  if (ev.key === 'Enter') {
-                    if (textInput.trim().length === 0) {
-                      setInput('')
-                      return
-                    }
-                    if (isValid(word.es, textInput)) {
-                      setAllAttempt([
-                        ...allAttempt,
-                        {
-                          valid: true,
-                          text: textInput,
-                        },
-                      ])
-                      setIsCorrect(true)
-                    } else {
-                      setAllAttempt([
-                        ...allAttempt,
-                        {
-                          valid: false,
-                          text: textInput,
-                        },
-                      ])
-                    }
-
-                    ev.preventDefault()
-                  }
+                onSubmit={(propal) => {
+                  pushAttempt(isValid(word.es, propal), propal)
                 }}
-                fullWidth={true}
-                aria-describedby="standard-trans-helper-text"
-                inputProps={{
-                  'aria-label': 'traduccion',
-                }}
-              />
-              <FormHelperText id="standard-trans-helper-text">
-                Traducción
-              </FormHelperText>
-              <ButtonGroup disableElevation variant="contained" color="primary">
-                <Button
-                  disabled={isCorrect}
-                  onClick={() => {
-                    setDontKnow(true)
-                  }}
-                >
-                  No sé
-                </Button>
-
-                <Button
-                  ref={btnEl}
-                  disabled={!isCorrect}
-                  onClick={() => setNextWord(true)}
-                >
-                  Próximo
-                </Button>
-              </ButtonGroup>
+              ></TranslationInput>
+              <FinishGrpBtn
+                onDontKnow={() => setDontKnow(true)}
+                onNext={() => setNextWord(true)}
+                readyForNext={isCorrect}
+              ></FinishGrpBtn>
             </Grid>
           </Grid>
         </Paper>

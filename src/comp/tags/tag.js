@@ -5,7 +5,12 @@ import './tag.css'
 export default function Tag({ text, onClick }) {
   return (
     <div className="button-tag">
-      <Chip label={text} color="primary" onDelete={(e) => onClick(e)} />
+      <Chip
+        label={text}
+        variant="outlined"
+        color="secondary"
+        onDelete={(e) => onClick(e)}
+      />
     </div>
   )
 }
