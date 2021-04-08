@@ -1,16 +1,23 @@
 import React, { useRef, useEffect } from 'react'
 import { Input, FormHelperText } from '@material-ui/core'
 
-import { normalize, capitalize } from '../../services/utils.service'
-
+/**
+ * The input for the translation
+ * @param opt.value the value of the input
+ * @param opt.disabled to disable the input text
+ * @param opt.onChange the fn to apply for any change of the input
+ * @param opt.onSubmit the fn to applay when submit
+ */
 export default function TranslationInput({
   value,
-  onChange,
   disabled,
+  onChange,
   onSubmit,
 }) {
+  /** the ref of the input for auto focus */
   const inputEl = useRef(null)
 
+  /** When the input becoming available, focus on it */
   useEffect(() => {
     if (!disabled) {
       inputEl.current.focus()

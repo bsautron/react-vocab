@@ -1,64 +1,87 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState } from 'react'
 import './translation.css'
-import {
-  Grid,
-  Paper,
-  Input,
-  FormHelperText,
-  Typography,
-} from '@material-ui/core'
+import { Grid, Paper } from '@material-ui/core'
 import AttemptList from '../attempt/attempt-list'
-import { normalize, capitalize } from '../../services/utils.service'
+import { normalize } from '../../services/utils.service'
 import FinishGrpBtn from '../finish-grp-btn/finish-grp-btn'
 import TranslationInput from './translation-input'
 import TranslationTitle from './translation-title'
 
+/**
+ * Check if the givving text correspond to the real trad
+ * @param trad the real traduction - can be several possible trad if separated by '/'
+ * @param text the proposal
+ */
+function isValid(trad, text) {
+  const sp = trad.split('/')
+  for (const s of sp) {
+    if (normalize(s) === normalize(text)) return true
+  }
+  return false
+}
+/**
+ * The entiere card for the translation of one word
+ * @param opt.word all information about the word
+ * @param opt.changeWord the fn to applay we need the change word
+ */
 export default function Translation({ word, changeWord }) {
-  const [allAttempt, setAllAttempt] = useState([])
-  const [isCorrect, setIsCorrect] = useState(false)
+  /** the array of attempts for the word */
+  const [attempts, setAttempts] = useState([])
+  /** use for shoing the traduction of the word */
+  const [showTrad, setDisplayTrad] = useState(false)
+  /** if the use don't know the trad */
   const [dontKnow, setDontKnow] = useState(false)
-  const [nextWord, setNextWord] = useState(false)
+  /** when we are ready to change word  */
+  const [goToChange, letsGoToChange] = useState(false)
+  /** the input of the proposal trad by the use */
   const [textInput, setInput] = useState('')
 
-  function isValid(trad, text) {
-    const sp = trad.split('/')
-    for (const s of sp) {
-      if (normalize(s) === normalize(text)) return true
-    }
-    return false
-  }
+  /**
+   * Push the attempt to the list of all attempts
+   * @param valid if the attempt is correct
+   * @param wordAttempt the text of the attempt
+   */
   const pushAttempt = (valid, wordAttempt) => {
-    setAllAttempt([
-      ...allAttempt,
+    setAttempts([
+      ...attempts,
       {
         valid,
         text: wordAttempt,
       },
     ])
-    setIsCorrect(valid)
+    setDisplayTrad(valid)
   }
 
+  /** When a new attempt appear, clear the input */
   useEffect(() => {
     setInput('')
-  }, [allAttempt])
+  }, [attempts])
 
+  /**
+   * When we are triggering the changing word, clear all and all the changeWord from the parent
+   * Triggered when use click on Next
+   */
   useEffect(() => {
-    if (isCorrect) {
-    }
-  }, [isCorrect])
-  useEffect(() => {
-    if (nextWord) {
-      changeWord()
-      setNextWord(false)
+    if (goToChange) {
+      letsGoToChange(false)
       setDontKnow(false)
-      setIsCorrect(false)
-      setAllAttempt([])
+      setDisplayTrad(false)
+      setAttempts([])
       setInput('')
+      changeWord()
     }
-  }, [nextWord])
+  }, [goToChange])
+
+  /**
+   * Show the traduction
+   * we show trad when:
+   * - the user click on don't know
+   * - the user reach the attpemt limit
+   * - the last push attempt is valid
+   */
   useEffect(() => {
     if (dontKnow) {
-      setIsCorrect(true)
+      setDisplayTrad(true)
     }
   }, [dontKnow])
 
@@ -83,13 +106,13 @@ export default function Translation({ word, changeWord }) {
               <TranslationTitle
                 word={word.fr}
                 trad={word.es}
-                showTrad={isCorrect}
+                showTrad={showTrad}
               />
             </Grid>
             <Grid item className="translation-attempts">
               <AttemptList
                 maxAttepmt={3}
-                attempts={allAttempt}
+                attempts={attempts}
                 onReachLimit={() => setDontKnow(true)}
               ></AttemptList>
             </Grid>
@@ -97,15 +120,15 @@ export default function Translation({ word, changeWord }) {
               <TranslationInput
                 value={textInput}
                 onChange={(e) => setInput(e.target.value)}
-                disabled={isCorrect}
+                disabled={showTrad}
                 onSubmit={(propal) => {
                   pushAttempt(isValid(word.es, propal), propal)
                 }}
               ></TranslationInput>
               <FinishGrpBtn
                 onDontKnow={() => setDontKnow(true)}
-                onNext={() => setNextWord(true)}
-                readyForNext={isCorrect}
+                onNext={() => letsGoToChange(true)}
+                readyForNext={showTrad}
               ></FinishGrpBtn>
             </Grid>
           </Grid>
